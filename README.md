@@ -1,4 +1,4 @@
-# isucon5 用の事前準備
+# isucon6 用の事前準備
 
 [isucon6q メモ](https://gist.github.com/mapk0y/bced808fe8f8f729c7266a8af70d8399)
 
