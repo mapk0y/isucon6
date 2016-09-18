@@ -1,0 +1,67 @@
+#!/bin/bash
+# vi: set et ts=2 sw=2 sts=0:
+
+function cecho() {
+  MSG=$1
+  if test -t 1;then
+    echo -e "\033[1;32mCHECK: $MSG"
+    tput sgr0
+  else
+    echo "CHECK: $MSG"
+  fi  
+}
+
+function eecho() {
+  MSG=$1
+  if test -t 1;then
+    echo -e "\033[1;31mERROR: $MSG"
+    tput sgr0
+  else
+    echo "ERROR: $MSG"
+  fi  
+}
+
+function slow_log_on() {
+  set -e
+  local L=$(mysql -Ne 'select cast(variable_value as unsigned) from information_schema.global_variables where variable_name="long_query_time"')
+  if [ "${L}" -gt 1 ]; then
+cho "current 'long_query_time' is ${L}"
+  fi
+  local F=$(mysql -Ne 'select variable_value from information_schema.global_variables where variable_name="slow_query_log"')
+  if [ "${F}" = "OFF" ]; then
+    cecho "change 'slow_query_log' ON"
+    set -x
+    mysql -e 'set global slow_query_log=1'
+    set +x
+    local N=$(mysql -Ne 'select variable_value from information_schema.global_variables where variable_name="slow_query_log"')
+    if [ "${N}" != "ON" ]; then
+      eecho "change 'slow_query_log' failed......"
+    else
+      cecho "change 'slow_query_log' success!"
+    fi
+  else
+    eecho "Already 'slow_query_log' on, 'long_query_time' is ${L}."
+  fi
+  set +e
+}
+
+function slow_log_off() {
+  set -e
+  local F=$(mysql -Ne 'select variable_value from information_schema.global_variables where variable_name="slow_query_log"')
+  if [ ${F} = "ON" ]; then
+    cecho "change 'slow_query_log' ON"
+    set -x
+    mysql -e 'set global slow_query_log=0'
+    set +x
+    local N=$(mysql -Ne 'select variable_value from information_schema.global_variables where variable_name="slow_query_log"')
+    if [ "${N}" != "OFF" ]; then
+      eecho "change 'slow_query_log' failed......"
+    else
+      cecho "change 'slow_query_log' success!"
+    fi
+  else
+    eecho "Already 'slow_query_log' off."
+  fi
+  set +e
+}
+

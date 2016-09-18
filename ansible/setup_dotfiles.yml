@@ -1,0 +1,16 @@
+# vi: set et ts=2 sw=2 sts=0:
+
+- hosts: isucon5
+  tasks:
+      - name: setup user dotfiles 
+        copy: src=./dotfiles/{{ item }} dest=~/{{ item }} backup=yes
+        with_items:
+          - .bashrc
+          - .tmux.conf
+          - .vimrc
+      - name: setup root dotfiles 
+        sudo: true
+        copy: src=./dotfiles/{{ item }} dest=/root/{{ item }} backup=yes
+        with_items:
+          - .mysql_functions
+

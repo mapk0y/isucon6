@@ -1,0 +1,24 @@
+# vi: set et ts=2 sw=2 sts=0:
+
+- hosts: isucon5
+  tasks:
+    - name: Apt install packages
+      sudo: true
+      apt: pkg={{ item }} force=yes update_cache=yes
+      with_items:
+        - git
+        - etckeeper
+        - tmux
+        - vim
+        - tig
+        - colordiff
+        - rsync
+        - build-essential
+        - automake
+        - curl
+        - tcpdump
+        - strace
+        - gdb
+        - linux-tools-common
+        - dstat
+        - silversearcher-ag
